@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from app.services.travel_service import SessionService
-from app.models.travel import SessionCreate, TravelQuery
+from app.models.travel import SessionCreate, TravelQuery, ItineraryRequest, TravelGuideRequest
 from app.services.search_service import EnhancedSearchTools
 
 router = APIRouter()
@@ -26,15 +26,13 @@ async def get_current_session(session_key: str):
         raise HTTPException(status_code=500, detail=f"Failed to get session: {str(e)}")
 
 @router.post("/itinerary/generate")
-async def generate_itinerary(travel_query: TravelQuery):
+async def generate_itinerary(itinerary_request: ItineraryRequest):
     try:
-        # Convert to travel state format
         travel_state = {
-            'departure_location': travel_query.departure_location,
-            'destination_location': travel_query.destination_location,
-            'travel_dates': travel_query.travel_dates,
-            'travel_mode': travel_query.travel_mode,
-            'user_profile': None
+            'departure_location': itinerary_request.departure_location,
+            'destination_location': itinerary_request.destination_location,
+            'travel_dates': itinerary_request.travel_dates,
+            'user_profile': itinerary_request.user_profile or {}
         }
         
         itinerary = search_tools.generate_intelligent_itinerary(travel_state)
@@ -42,10 +40,19 @@ async def generate_itinerary(travel_query: TravelQuery):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Itinerary generation failed: {str(e)}")
 
-@router.get("/guide/{destination}")
-async def get_travel_guide(destination: str):
+@router.post("/guide")
+async def get_travel_guide(guide_request: TravelGuideRequest):
     try:
-        guide_data = search_tools.get_travel_guide(destination)
+        guide_data = search_tools.get_travel_guide(guide_request.destination)
         return guide_data
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to get travel guide: {str(e)}")
+
+@router.get("/map")
+async def generate_map(lat: float = 20.5937, lon: float = 78.9629, zoom: int = 4):
+    try:
+        from app.services.search_service import LocationService
+        map_data = LocationService.create_map(lat, lon, zoom)
+        return {"map_base64": map_data}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Map generation failed: {str(e)}")

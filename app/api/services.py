@@ -22,7 +22,6 @@ async def search_hotels(search_data: ServiceSearch):
     try:
         results = search_tools.search_hotels(
             search_data.destination,
-            search_data.area,
             search_data.checkin,
             search_data.checkout
         )
@@ -33,7 +32,6 @@ async def search_hotels(search_data: ServiceSearch):
 @router.post("/transport/search")
 async def search_transportation(search_data: ServiceSearch):
     try:
-        # Search all transport types
         results = {}
         
         # Search trains
@@ -63,3 +61,14 @@ async def search_transportation(search_data: ServiceSearch):
         return results
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Transport search failed: {str(e)}")
+
+@router.post("/cabs/local")
+async def search_local_cabs(search_data: ServiceSearch):
+    try:
+        results = search_tools.search_local_cab(
+            search_data.departure,
+            search_data.destination
+        )
+        return results
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Local cab search failed: {str(e)}")

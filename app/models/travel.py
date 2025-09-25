@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, Dict, Any, List
+from typing import Optional, Dict, Any
 
 class TravelQuery(BaseModel):
     departure_location: str
@@ -30,3 +30,12 @@ class AgentSelect(BaseModel):
 class BookingRequest(BaseModel):
     service_id: str
     booking_data: Dict[str, Any]
+
+class TravelGuideRequest(BaseModel):
+    destination: str
+
+class ItineraryRequest(BaseModel):
+    departure_location: str
+    destination_location: str
+    travel_dates: Dict[str, str]
+    user_profile: Optional[Dict[str, Any]] = None
