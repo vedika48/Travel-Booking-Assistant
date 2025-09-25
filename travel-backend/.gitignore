@@ -1,0 +1,29 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables
+.env
+.env.local
+.secrets
+
+# API keys and credentials
+*.key
+*.pem
+config.json
+secrets.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files (optional but recommended)
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs (if you add logging)
+*.log
+logs/
