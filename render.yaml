@@ -3,8 +3,19 @@ services:
     name: travel-assistant-api
     env: python
     plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
+      # ensure Cargo caches are writable
+      - key: CARGO_HOME
+        value: /tmp/cargo
+      - key: PATH
+        value: /opt/render/.cargo/bin:$PATH
+    buildCommand: |
+      # Install latest pip and Rust
+      pip install --upgrade pip setuptools wheel maturin
+      curl https://sh.rustup.rs -sSf | sh -s -- -y --no-modify-path
+      export PATH="$HOME/.cargo/bin:$PATH"
+      # Install your Python dependencies
+      pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
