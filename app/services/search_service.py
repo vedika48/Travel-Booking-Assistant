@@ -13,13 +13,6 @@ except ImportError as e:
     print(f"Groq dependencies missing: {e}")
     GROQ_AVAILABLE = False
 
-# LangChain imports (optional)
-try:
-    from langchain_community.tools import DuckDuckGoSearchRun
-    LANGCHAIN_AVAILABLE = True
-except ImportError:
-    LANGCHAIN_AVAILABLE = False
-
 # Tavily imports
 try:
     from tavily import TavilyClient
