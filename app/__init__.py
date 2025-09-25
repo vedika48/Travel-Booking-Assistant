@@ -21,7 +21,7 @@ def create_app():
         }
     })
     
-    # Register blueprints (equivalent to FastAPI routers)
+    # Register blueprints
     from app.api.travel import travel_bp
     from app.api.chat import chat_bp
     from app.api.services import services_bp
@@ -52,7 +52,3 @@ def create_app():
     return app
 
 app = create_app()
-
-if __name__ == "__main__":
-    print("Starting Travel Assistant API...")
-    app.run(host="0.0.0.0", port=8000, debug=True)

@@ -1,74 +1,89 @@
-from fastapi import APIRouter, HTTPException
-from app.models.travel import ServiceSearch
+from flask import Blueprint, request, jsonify
 from app.services.search_service import EnhancedSearchTools
 
-router = APIRouter()
+services_bp = Blueprint('services', __name__)
 search_tools = EnhancedSearchTools()
 
-@router.post("/flights/search")
-async def search_flights(search_data: ServiceSearch):
+@services_bp.route('/flights/search', methods=['POST'])
+def search_flights():
     try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'Request body is required'}), 400
+            
         results = search_tools.search_flights(
-            search_data.departure,
-            search_data.destination,
-            search_data.date
+            data.get('departure'),
+            data.get('destination'),
+            data.get('date')
         )
-        return results
+        return jsonify(results)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Flight search failed: {str(e)}")
+        return jsonify({'error': f'Flight search failed: {str(e)}'}), 500
 
-@router.post("/hotels/search")
-async def search_hotels(search_data: ServiceSearch):
+@services_bp.route('/hotels/search', methods=['POST'])
+def search_hotels():
     try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'Request body is required'}), 400
+            
         results = search_tools.search_hotels(
-            search_data.destination,
-            search_data.checkin,
-            search_data.checkout
+            data.get('destination'),
+            data.get('checkin'),
+            data.get('checkout')
         )
-        return results
+        return jsonify(results)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Hotel search failed: {str(e)}")
+        return jsonify({'error': f'Hotel search failed: {str(e)}'}), 500
 
-@router.post("/transport/search")
-async def search_transportation(search_data: ServiceSearch):
+@services_bp.route('/transport/search', methods=['POST'])
+def search_transportation():
     try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'Request body is required'}), 400
+            
         results = {}
         
         # Search trains
         train_results = search_tools.search_trains(
-            search_data.departure,
-            search_data.destination,
-            search_data.date
+            data.get('departure'),
+            data.get('destination'),
+            data.get('date')
         )
         results['trains'] = train_results
         
         # Search buses
         bus_results = search_tools.search_buses(
-            search_data.departure,
-            search_data.destination,
-            search_data.date
+            data.get('departure'),
+            data.get('destination'),
+            data.get('date')
         )
         results['buses'] = bus_results
         
         # Search cabs
         cab_results = search_tools.search_intercity_cab(
-            search_data.departure,
-            search_data.destination,
-            search_data.date
+            data.get('departure'),
+            data.get('destination'),
+            data.get('date')
         )
         results['cabs'] = cab_results
         
-        return results
+        return jsonify(results)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Transport search failed: {str(e)}")
+        return jsonify({'error': f'Transport search failed: {str(e)}'}), 500
 
-@router.post("/cabs/local")
-async def search_local_cabs(search_data: ServiceSearch):
+@services_bp.route('/cabs/local', methods=['POST'])
+def search_local_cabs():
     try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'Request body is required'}), 400
+            
         results = search_tools.search_local_cab(
-            search_data.departure,
-            search_data.destination
+            data.get('departure'),
+            data.get('destination')
         )
-        return results
+        return jsonify(results)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Local cab search failed: {str(e)}")
+        return jsonify({'error': f'Local cab search failed: {str(e)}'}), 500
